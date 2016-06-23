@@ -1,0 +1,12 @@
+All pyc files
+*.pyc
+
+# Django files
+*.log
+
+# json files
+*.json
+
+*~
+DEADJOE
+media/temp
