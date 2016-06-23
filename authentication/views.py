@@ -3,6 +3,7 @@ import getpass
 
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, HttpResponse
+from django.conf import settings
 
 from rest_framework import status, views
 from rest_framework.response import Response
@@ -43,7 +44,10 @@ class LoginView(views.APIView):
     serializer_class = AccountSerializer
 
     def post(self, request, format=None):
-        data = json.loads(request.body)
+
+        queryset = Account.objects.all()
+        serilaizer = self.get_serializer(queryset)
+        data = json.loads(serilaizer.data)
 
         email = data.get('email', None)
         password = data.get('password', None)
