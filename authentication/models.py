@@ -14,20 +14,13 @@ class AccountManager(BaseUserManager):
             raise ValueError('enter valid address.')
 
         if not kwargs.get('username'):
-            raise ValueErrror('enter valid username')
+            raise ValueError('enter valid username')
 
         account = self.model(
             email=self.normalize_email(email), username=kwargs.get('username')
         )
 
         account.set_password(password)
-        account.save()
-        return account
-
-    def create_superuser(self, email, password, **kwargs):
-
-        account = self.create_user(email, password, **kwargs)
-        account.is_admin = True
         account.save()
         return account
 
