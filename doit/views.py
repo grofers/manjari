@@ -17,15 +17,11 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         filter_argument = self.request.query_params.get('q')
+        filter_argument = int(filter_argument)
         date_today = datetime.date.today()
 
         if filter_argument:
-            if filter_argument == "today":
-                date = date_today.strftime("%Y-%m-%d")
-                queryset = Task.objects.filter(
-                    due_date__date=date).order_by('due_date')
-            if filter_argument == "week":
-                date = date_today - datetime.timedelta(days=7)
+                date = date_today - datetime.timedelta(days=filter_argument)
                 queryset = Task.objects.filter(
                     due_date__date__gte=date).order_by('due_date')
 

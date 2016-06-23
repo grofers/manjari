@@ -6,6 +6,6 @@ from django.db import models
 class Task(models.Model):
     '''
     '''
-    description = models.CharField(max_length=256)
+    description = models.TextField(blank=False)
     due_date = models.DateTimeField(max_length=128)
     task_status = models.BooleanField(default=False)
