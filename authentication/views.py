@@ -1,4 +1,5 @@
 import json
+import getpass
 
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, HttpResponse
@@ -37,6 +38,10 @@ class AccountViewSet(viewsets.ModelViewSet):
 
 
 class LoginView(views.APIView):
+
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
+
     def post(self, request, format=None):
         data = json.loads(request.body)
 
