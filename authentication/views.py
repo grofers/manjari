@@ -40,24 +40,24 @@ class AccountViewSet(viewsets.ModelViewSet):
 
 class LoginView(views.APIView):
 
-    queryset = Account.objects.all()
-    serializer_class = AccountSerializer
+    #queryset = Account.objects.all()
+    #serializer_class = AccountSerializer
 
     def post(self, request, format=None):
 
-        queryset = Account.objects.all()
-        serilaizer = self.get_serializer(queryset)
-        data = json.loads(serilaizer.data)
+       # queryset = Account.objects.all()
+       # serilaizer = self.get_serializer(queryset)
+        data = json.loads(request.body)
 
         email = data.get('email', None)
         password = data.get('password', None)
+
 
         account = authenticate(email=email, password=password)
 
         if account is not None:
             if account.is_active:
                 login(request, account)
-
                 serialized = AccountSerializer(account)
 
                 return Response(serialized.data)
@@ -80,3 +80,6 @@ class LogoutView(views.APIView):
         logout(request)
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+
+        
