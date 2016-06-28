@@ -29,13 +29,24 @@ class AccountViewSet(viewsets.ModelViewSet):
         return (permissions.IsAuthenticated(), IsAccountOwner(),)
 
     def create(self, request):
+        response = {}
+        status = {}
+        data = {}
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
             Account.objects.create_user(**serializer.validated_data)
-
-            return Response(status=status.HTTP_201CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            status['success'] = True
+            data['tasks'] = serializer.data
+            response['status'] = status
+            response['data'] = data
+            return Response(response)
+        status['success'] = False
+        error = {}
+        error['msg'] = 'INVALID CREDENTIALS'
+        status['error'] = error
+        response['status'] = status
+        return Response(response, status=405)
 
 
 class LoginView(views.APIView):
