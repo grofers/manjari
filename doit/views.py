@@ -15,12 +15,18 @@ from authentication.models import Account
 class TaskViewSet(viewsets.ModelViewSet):
     '''
     '''
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
     def list(self, request, *args, **kwargs):
         filter_argument = self.request.query_params.get('q')
         date_today = datetime.date.today()
+
+
+
+        print request.user.id
 
         if filter_argument:
                 filter_argument = int(filter_argument)

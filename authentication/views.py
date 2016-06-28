@@ -34,24 +34,18 @@ class AccountViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             Account.objects.create_user(**serializer.validated_data)
 
-            return HttpResponse('Account created')
-        return HttpResponse('Bad request')
+            return Response(status=status.HTTP_201CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(views.APIView):
 
-    #queryset = Account.objects.all()
-    #serializer_class = AccountSerializer
-
     def post(self, request, format=None):
 
-       # queryset = Account.objects.all()
-       # serilaizer = self.get_serializer(queryset)
         data = json.loads(request.body)
 
         email = data.get('email', None)
         password = data.get('password', None)
-
 
         account = authenticate(email=email, password=password)
 
@@ -80,6 +74,3 @@ class LogoutView(views.APIView):
         logout(request)
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
-
-
-        
