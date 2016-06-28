@@ -43,6 +43,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                     due_date__date__gte=date,
                     user_id=request.user.id).order_by('due_date')
         if not filter_argument:
+            print filter_argument
             queryset = Task.objects.filter(
                 user_id=request.user.id).order_by('-updated_at')
         queryset = self.paginate_queryset(queryset)
@@ -68,11 +69,67 @@ class TaskViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
+        response = {}
+        status = {}
+        data = {}
         task_id = self.get_object().id
-        queryset = Tasks.objects.filter(id=task_id, user_id=request.user.id)
+        queryset = Task.objects.filter(id=task_id, user_id=request.user.id)
         if not queryset:
-            return Response(status=status.HTTP_405_BAD_REQUEST)
+            status['success'] = False
+            error = {}
+            error['msg'] = 'Delete not Authorized'
+            status['error'] = error
+            response['status'] = status
+            return Response(response, status=403)
         else:
             instance = self.get_object()
             instance.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            status['success'] = True
+            response['status'] = status
+            return Response(response, status=204)
+
+    def retrieve(self, request, *args, **kwargs):
+        response = {}
+        status = {}
+        data = {}
+        task_id = self.get_object().id
+        queryset = Task.objects.filter(id=task_id, user_id=request.user.id)
+        if not queryset:
+            status['success'] = False
+            error = {}
+            error['msg'] = 'Invalid TaskId'
+            status['error'] = error
+            response['status'] = status
+            return Response(response, status=403)
+        else:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance)
+            status['success'] = True
+            data['tasks'] = serializer.data
+            response['status'] = status
+            response['data'] = data
+            return Response(response)
+
+    def update(self, request, *args, **kwargs):
+        response = {}
+        status = {}
+        data = {}
+        task_id = self.get_object().id
+        queryset = Task.objects.filter(id=task_id, user_id=request.user.id)
+        if not queryset:
+            status['success'] = False
+            error = {}
+            error['msg'] = 'Invalid TaskId'
+            status['error'] = error
+            response['status'] = status
+            return Response(response, status=403)
+        else:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            status['success'] = True
+            data['tasks'] = serializer.data
+            response['status'] = status
+            response['data'] = data
+            return Response(response)
