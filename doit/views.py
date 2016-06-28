@@ -7,9 +7,16 @@ from rest_framework.response import Response
 
 from .serializers import TaskSerializer
 from .models import Task
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from authentication.models import Account
+
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'limit'
+    max_page_size = 1000
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -24,10 +31,6 @@ class TaskViewSet(viewsets.ModelViewSet):
         filter_argument = self.request.query_params.get('q')
         date_today = datetime.date.today()
 
-
-
-        print request.user.id
-
         if filter_argument:
                 filter_argument = int(filter_argument)
                 date = date_today - datetime.timedelta(days=filter_argument)
@@ -35,7 +38,8 @@ class TaskViewSet(viewsets.ModelViewSet):
                     due_date__date__gte=date,user_id=request.user.id).order_by('due_date')
         if not filter_argument:
             queryset = Task.objects.filter(user_id=request.user.id).order_by('-updated_at')
-
+        
+        queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
