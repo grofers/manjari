@@ -1,6 +1,7 @@
 import datetime
 
 from django.conf import settings
+from django.shortcuts import render
 
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -9,9 +10,12 @@ from .serializers import TaskSerializer
 from .models import Task
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from authentication.models import Account
+
+
+def home(request):
+    return render(request, 'main.html', {'STATIC_URL': settings.STATIC_URL})
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -24,7 +28,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     '''
     '''
     permission_classes = (IsAuthenticated,)
-    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    authentication_classes = (SessionAuthentication,)
     pagination_class = StandardResultsSetPagination
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
@@ -35,16 +39,17 @@ class TaskViewSet(viewsets.ModelViewSet):
         response = {}
         status = {}
         data = {}
-
         if filter_argument:
                 filter_argument = int(filter_argument)
-                date = date_today - datetime.timedelta(days=filter_argument)
+                date = date_today + datetime.timedelta(days=filter_argument)
                 queryset = Task.objects.filter(
-                    due_date__date__gte=date,
-                    user_id=request.user.id).order_by('due_date')
+                    task_status=True,
+                    user_id=request.user.id,
+                    due_date__date__gte=date_today,
+                    due_date__date__lte=date).order_by('due_date')
         if not filter_argument:
-            print filter_argument
             queryset = Task.objects.filter(
+                task_status=True,
                 user_id=request.user.id).order_by('-updated_at')
         queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(queryset, many=True)
@@ -82,8 +87,8 @@ class TaskViewSet(viewsets.ModelViewSet):
             response['status'] = status
             return Response(response, status=403)
         else:
-            instance = self.get_object()
-            instance.delete()
+            instance = self.get_object().task_status
+            instance = False
             status['success'] = True
             response['status'] = status
             return Response(response, status=204)
