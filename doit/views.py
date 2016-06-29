@@ -43,13 +43,13 @@ class TaskViewSet(viewsets.ModelViewSet):
                 filter_argument = int(filter_argument)
                 date = date_today + datetime.timedelta(days=filter_argument)
                 queryset = Task.objects.filter(
-                    task_status=True,
+                    active_flag=True,
                     user_id=request.user.id,
                     due_date__date__gte=date_today,
                     due_date__date__lte=date).order_by('due_date')
         if not filter_argument:
             queryset = Task.objects.filter(
-                task_status=True,
+                active_flag=True,
                 user_id=request.user.id).order_by('-updated_at')
         queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(queryset, many=True)
@@ -87,8 +87,9 @@ class TaskViewSet(viewsets.ModelViewSet):
             response['status'] = status
             return Response(response, status=403)
         else:
-            instance = self.get_object().task_status
-            instance = False
+            instance = self.get_object()
+            instance.active_flag = False
+            instance.save()
             status['success'] = True
             response['status'] = status
             return Response(response, status=204)

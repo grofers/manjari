@@ -13,3 +13,4 @@ class Task(models.Model):
     task_status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True,  null=True)
+    active_flag = models.BooleanField(default=True)
