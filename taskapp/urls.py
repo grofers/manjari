@@ -24,12 +24,13 @@ from authentication.views import LogoutView
 
 
 router = DefaultRouter()
-router.register(r'tasks', TaskViewSet)
-router.register(r'users', AccountViewSet)
+router.register(r'api/v1/tasks', TaskViewSet)
+router.register(r'api/v1/users', AccountViewSet)
 
 
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^user/sessions/$', LoginView.as_view(), name='login'),
-    url(r'^logout/$', LogoutView.as_view(), name='logout'),
+    url(r'^', include('doit.urls')),
+    url(r'^api/v1/user/sessions/$', LoginView.as_view()),
+    url(r'^api/v1/logout/$', LogoutView.as_view()),
 ]

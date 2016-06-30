@@ -46,7 +46,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                     active_flag=True,
                     user_id=request.user.id,
                     due_date__date__gte=date_today,
-                    due_date__date__lte=date).order_by('due_date')
+                    due_date__date__lte=date).order_by('-due_date')
         if not filter_argument:
             queryset = Task.objects.filter(
                 active_flag=True,
@@ -99,7 +99,9 @@ class TaskViewSet(viewsets.ModelViewSet):
         status = {}
         data = {}
         task_id = self.get_object().id
-        queryset = Task.objects.filter(id=task_id, user_id=request.user.id)
+        queryset = Task.objects.filter(
+            id=task_id, user_id=request.user.id,
+            active_flag=True)
         if not queryset:
             status['success'] = False
             error = {}
@@ -121,7 +123,9 @@ class TaskViewSet(viewsets.ModelViewSet):
         status = {}
         data = {}
         task_id = self.get_object().id
-        queryset = Task.objects.filter(id=task_id, user_id=request.user.id)
+        queryset = Task.objects.filter(
+            id=task_id, user_id=request.user.id,
+            active_flag=True)
         if not queryset:
             status['success'] = False
             error = {}
