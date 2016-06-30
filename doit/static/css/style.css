@@ -1,0 +1,10 @@
+.done-true {
+  text-decoration: line-through;
+  color: grey;
+}
+
+.initial-block {
+   text-align: center;
+            display: table-cell;
+            vertical-align: middle;
+}
