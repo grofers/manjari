@@ -1,0 +1,169 @@
+<nav class="navbar navbar-default">
+   <div class="container-fluid">
+      <div class="navbar-header">
+         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+         <span class="sr-only">Toggle navigation</span>
+         <span class="icon-bar"></span>
+         <span class="icon-bar"></span>
+         <span class="icon-bar"></span>
+         </button>      
+         <a class="navbar-brand" href="#/tasks">
+         <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span>
+         </a>
+      </div>
+      <div class="collapse navbar-collapse" id="navbar-collapse-1">
+         <ul class="nav navbar-nav">
+            <li><a class="active" href="#/tasks" ng-click="get_today_tasks()">Today <span class="sr-only">(current)</span></a></li>
+            <li><a href="#/tasks" ng-click="get_week_tasks()">Week</a></li>
+            <li><a href="#/tasks" ng-click="get_tasks()">All</a></li>
+         </ul>
+         <form class="navbar-form navbar-left" role="search">
+            <div class="form-group">
+               <input type="text" class="form-control" placeholder="Search" ng-model="query[queryBy]">
+            </div>
+            &nbsp;&nbsp;&nbsp;
+            <a href="#/tasks" ng-click="toggle_showme()">
+            <button type="button" class="btn btn-default btn-default">
+            <span class="glyphicon glyphicon-plus"  aria-hidden="true"></span> Add Task
+            </button> </a>
+         </form>
+         <ul class="nav navbar-nav navbar-right">
+            <li><a href="#/logout">Logout</a></li>
+         </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+   </div>
+   <!-- /.container-fluid -->
+</nav>
+<div  ng-show="showme" class="container">
+   <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+         <div class="well">
+            <form role="form" name="task_form">
+               <div class="form-group">
+                  <label for="task__description">Description</label>
+                  <input type="text" class="form-control" id="task__description" ng-model="task.description" placeholder="ex. Get groceries" />
+               </div>
+               <div class="row">
+                  <div class="form-group">
+                     <div class="panel-body" >
+                        <label for="task__date">Date</label>
+                        <div class="input-group ui-datepicker">
+                           <span class="input-group-addon" ng-click="open($event)">
+                           <i class="fa fa-calendar"></i>
+                           </span>
+                           <input type="text" class="form-control" custom-class="getDayClass(date, mode)"  datepicker-popup="[[format]]" 
+                              ng-model="task.date" is-open="opened" min="minDate" max="'2015-06-22'" 
+                              datepicker-options="dateOptions"  
+                              ng-required="true" close-text="Close"
+                              ng-click="open($event)" value="[[task.date]]" />
+                        </div>
+                     </div>
+                     <div class="form-group">
+                        <div>
+                           <label for="task__time">&nbsp;&nbsp;&nbsp;Time</label>
+                           <timepicker align="center" data-ng-model="task.time" data-ng-change="changed()" data-hour-step="1" data-minute-step="1" data-show-meridian="ismeridian"></timepicker>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div align= "center" ng-click="showme=false">
+                  <button type="submit" ng-click="task_add(task)"class="btn btn-primary">Add Task</button>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+<div ng-show="showadd" class="container">
+   <div class="well">
+      Task created successfully!!
+   </div>
+</div>
+<div ng-show="showdel" class="container">
+   <div class="well">
+      Task deleted successfully!!
+   </div>
+</div>
+<div ng-show="showdit" class="container">
+   <div class="well">
+      Task updated successfully!!
+   </div>
+</div>
+<div align= "left" class="list-group" ng-repeat="task in task_set | filter:query">
+   <button type="button" class="btn btn-default btn-lg">
+   <span class="glyphicon glyphicon-ok" ng-click="strike(task)"aria-hidden="true"></span> 
+   </button>   
+
+   <div class="col-md-6">
+      <button type="button" ng-class="{strike: isstrike}" class="list-group-item">
+      [[task.description]] </button>
+   </div>
+   <div class="col-md-3">
+      <button type="button" ng-class="{strike: isstrike}" class="list-group-item">&nbsp;&nbsp;[[task.due_date |  date:"yyyy-MM-dd  'at' h:mma"]] 
+      </button>
+   </div>
+   <a href="#/tasks" ng-click="showedit = !showedit">
+   <button type="button" ng-click="task_edit(task.id)" class="btn btn-default btn-lg">
+   <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 
+   </button></a>
+   <button type="button" ng-click="task_delete(task.id)" class="btn btn-default btn-lg">
+   <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> 
+   </button>
+
+  <div ng-show="showedit" class="container">
+   <div ng-controller="EditController"class="row">
+      <div class="col-md-6 col-md-offset-6">
+         <div class="well">
+            <form role="form" name="edit_form">
+               <div class="form-group">
+                  <label for="edit__description">Description</label>
+                  <input type="text" placeholder="[[task.description]]" class="form-control" id="edit__description" ng-model="edit.description"/>
+               </div>
+               <div class="row">
+                  <div class="form-group">
+                     <div class="panel-body" >
+                        <label for="edit__date">Date</label>
+                        <div class="input-group ui-datepicker">
+                           <span class="input-group-addon" ng-click="open($event)">
+                           <i class="fa fa-calendar"></i>
+                           </span>
+                           <input type="text" class="form-control" task datepicker-popup="[[format]]" 
+                              ng-model="edit.date" is-open="opened" min="minDate" max="'2015-06-22'" 
+                              datepicker-options="dateOptions"  
+                              ng-required="true" close-text="Close"
+                              ng-click="open($event)" placeholder="[[task.due_date]]" />
+                        </div>
+                     </div>
+                     <div class="form-group">
+                        <div>
+                           <label for="edit__time">&nbsp;&nbsp;&nbsp;Time</label>
+                           <timepicker align="center" data-ng-model="edit.time" data-ng-change="changed()" data-hour-step="1" data-minute-step="1" data-show-meridian="ismeridian" ></timepicker>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div align= "center">
+                  <button type="submit" ng-click="task_update('edit','task')"class="btn btn-primary">Edit Task</button>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

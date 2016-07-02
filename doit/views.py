@@ -46,7 +46,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                     active_flag=True,
                     user_id=request.user.id,
                     due_date__date__gte=date_today,
-                    due_date__date__lte=date).order_by('-due_date')
+                    due_date__date__lte=date).order_by('due_date')
         if not filter_argument:
             queryset = Task.objects.filter(
                 active_flag=True,
