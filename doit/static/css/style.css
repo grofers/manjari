@@ -8,3 +8,7 @@
             display: table-cell;
             vertical-align: middle;
 }
+
+    .strike {
+      text-decoration: line-through;
+    }
